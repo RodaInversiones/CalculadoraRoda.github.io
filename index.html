@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#102a43">
+<title>Roda Imports · Calculadora</title>
+<style>
+:root {
+  --navy:#102a43; --blue:#1f5f8b; --bg:#f3f6f9; --card:#fff; --text:#16202a;
+  --muted:#657786; --line:#d9e2ec; --green:#1f7a4d; --yellow:#fff3cd;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);font-family:Inter,Arial,sans-serif;color:var(--text);padding-bottom:30px}
+header{background:linear-gradient(135deg,var(--navy),var(--blue));color:#fff;padding:22px 18px 18px;position:sticky;top:0;z-index:10;box-shadow:0 3px 12px #0002}
+header h1{margin:0;font-size:22px} header p{margin:5px 0 0;opacity:.85;font-size:13px}
+main{max-width:680px;margin:auto;padding:14px}
+.card{background:var(--card);border-radius:16px;padding:16px;margin:12px 0;box-shadow:0 2px 10px #102a4312;border:1px solid #e6edf3}
+.section{font-weight:800;color:var(--navy);font-size:15px;margin-bottom:12px}
+.grid{display:grid;grid-template-columns:1fr;gap:11px}
+label{font-size:12px;font-weight:700;color:var(--muted);display:block;margin-bottom:5px}
+input,select{width:100%;height:46px;border:1px solid var(--line);border-radius:11px;padding:0 12px;font-size:16px;background:#fff;color:var(--text)}
+input:focus,select:focus{outline:2px solid #5b9bd5;outline-offset:1px}
+.row{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid #edf1f4;font-size:14px}
+.row:last-child{border-bottom:0} .value{font-weight:800;white-space:nowrap}
+.total{background:var(--navy);color:#fff;border-radius:14px;padding:15px;margin-top:10px}
+.total .big{font-size:28px;font-weight:900;margin-top:3px}
+.result{background:var(--green);color:#fff;border-radius:14px;padding:15px;margin-top:10px}
+.result .big{font-size:30px;font-weight:900}
+.note{font-size:11px;color:var(--muted);line-height:1.45}
+button{width:100%;height:48px;border:0;border-radius:12px;background:var(--blue);color:#fff;font-size:16px;font-weight:800}
+.secondary{background:#e8eef3;color:var(--navy);margin-top:9px}
+@media(min-width:560px){.grid.two{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<header><h1>🚗 Roda Imports</h1><p>Calculadora de importación · Copart → El Salvador</p></header>
+<main>
+<section class="card">
+  <div class="section">1. Compra en Copart</div>
+  <div class="grid">
+    <div><label>Precio ganador</label><input id="price" type="number" min="0" step="0.01" value="4980"></div>
+  </div>
+  <div class="row"><span>Buyer Fee · Salvage + Secured</span><span class="value" id="buyer">$0.00</span></div>
+  <div class="row"><span>Virtual Bid · Live Bid</span><span class="value" id="live">$0.00</span></div>
+  <div class="row"><span>Gate Fee</span><span class="value" id="gate">$0.00</span></div>
+  <div class="row"><span>Environmental</span><span class="value" id="env">$0.00</span></div><div class="row"><span>Title Fee</span><span class="value" id="titleFee">$40.00</span></div>
+  <div class="total"><div>Factura Copart</div><div class="big" id="copart">$0.00</div></div>
+</section>
+
+<section class="card">
+  <div class="section">2. Transporte USA</div>
+  <div class="grid two">
+    <div><label>Puerto / base Matus</label><select id="base"></select></div>
+    <div><label>Tipo de vehículo</label><select id="type"></select></div>
+    <div style="grid-column:1/-1">
+      <label>Localidad / patio Copart</label>
+      <select id="location"></select>
+    </div>
+    </div>
+  </div>
+  <div class="row"><span>Grúa USA</span><span class="value" id="grua">$0.00</span></div>
+  <div class="row"><span>Flete marítimo</span><span class="value" id="freight">$0.00</span></div>
+  <div class="grid two" style="margin-top:10px">
+    <div><label>BL</label><input id="bl" type="number" min="0" step="0.01" value="20"></div>
+    <div><label>Manejo administrativo</label><input id="admin" type="number" min="0" step="0.01" value="0"></div>
+  </div>
+  <div class="card" style="margin:12px 0 0;background:#f8fafc;box-shadow:none">
+    <div class="section" style="font-size:14px">Otros costos propios</div>
+    <div class="grid two">
+      <div><label>Aduana</label><input id="aduana" type="number" min="0" step="0.01" value="113"></div>
+      <div><label>Transferencia</label><input id="transfer" type="number" min="0" step="0.01" value="40"></div>
+      <div><label>Storage</label><input id="storage" type="number" min="0" step="0.01" value="30"></div>
+      <div><label>Roda</label><input id="roda" type="number" min="0" step="0.01" value="0"></div>
+      <div style="grid-column:1/-1"><label>Otros</label><input id="other" type="number" min="0" step="0.01" value="0"></div>
+    </div>
+    <div class="row"><span>Total otros costos</span><span class="value" id="ownCosts">$183.00</span></div>
+  </div>
+</section>
+
+<section class="card">
+  <div class="section">3. Impuestos</div>
+  <div class="row"><span>Base = Factura Copart + Flete + Grúa + BL</span><span class="value" id="taxBase">$0.00</span></div>
+  <div style="margin-top:10px">
+    <label for="taxRate">Porcentaje de impuesto</label>
+    <select id="taxRate">
+      <option value="10">10%</option>
+      <option value="15">15%</option>
+      <option value="20">20%</option>
+      <option value="25">25%</option>
+      <option value="30">30%</option>
+      <option value="35">35%</option>
+      <option value="40">40%</option>
+      <option value="45">45%</option>
+      <option value="50" selected>50%</option>
+    </select>
+  </div>
+  <div class="row"><span>Impuestos</span><span class="value" id="tax">$0.00</span></div>
+</section>
+
+<section class="card">
+  <div class="section">4. Resultado</div>
+  <div class="row"><span>Costo antes de impuestos</span><span class="value" id="beforeTax">$0.00</span></div>
+  <div class="total"><div>Costo total puesto en El Salvador</div><div class="big" id="total">$0.00</div></div>
+  <div style="margin-top:12px"><label>Precio de venta</label><input id="sale" type="number" min="0" step="0.01" value="0"></div>
+  <div class="result"><div>Ganancia</div><div class="big" id="profit">$0.00</div><div id="margin" style="margin-top:3px">Margen: 0.00%</div></div>
+</section>
+
+<section class="card">
+  <button onclick="resetApp()">↺ Restablecer</button>
+  <div class="note" style="margin-top:12px">Configuración: Salvage + Secured + Live Bid, Gate $90, Environmental $15, Title $40 e impuestos ajustables del 10% al 50% sobre Factura Copart + Flete marítimo + Grúa + BL. Otros costos propios se agregan al costo total.</div>
+</section>
+</main>
+<script>
+const D = {"buyer": [[0, 25, 0], [50, 45, 0], [100, 80, 49], [200, 130, 49], [300, 137.5, 49], [350, 145, 49], [400, 175, 49], [450, 185, 49], [500, 205, 59], [550, 210, 59], [600, 240, 59], [700, 270, 59], [800, 295, 59], [900, 320, 59], [1000, 375, 79], [1200, 395, 79], [1300, 410, 79], [1400, 430, 79], [1500, 445, 89], [1600, 465, 89], [1700, 485, 89], [1800, 510, 89], [2000, 535, 99], [2400, 570, 99], [2500, 610, 99], [3000, 655, 99], [3500, 705, 99], [4000, 725, 109], [4500, 750, 109], [5000, 775, 109], [5500, 800, 109], [6000, 825, 139], [6500, 845, 139], [7000, 880, 139], [7500, 900, 139], [8000, 925, 149], [8500, 945, 149], [9000, 945, 149], [10000, 1000, 149], [15000, 0.075, 149]], "freight": [["California", "Vehículo Pequeño", 1170], ["California", "Especial", 1270], ["California", "Vehículo Mediano", 1370], ["California", "Vehículo Grande", 1470], ["California", "Vehículo Extra Grande", 1570], ["California", "Vehículo Extra Extra Grande", "A Cotizar"], ["California", "Motos", 325], ["California", "Carga", 200], ["California", "Uso licencia dealer", 150], ["Florida", "Vehículo Pequeño", 955], ["Florida", "Especial", 1045], ["Florida", "Vehículo Mediano", 1085], ["Florida", "Vehículo Grande", 1475], ["Florida", "Vehículo Extra Grande", 1575], ["Florida", "Vehículo Extra Extra Grande", "A Cotizar"], ["Florida", "Motos", 325], ["Florida", "Carga", 200], ["Florida", "Uso licencia dealer", 150], ["Philadelphia", "Vehículo Pequeño", 950], ["Philadelphia", "Especial", 1050], ["Philadelphia", "Vehículo Mediano", 1175], ["Philadelphia", "Vehículo Grande", 1470], ["Philadelphia", "Vehículo Extra Grande", 1570], ["Philadelphia", "Vehículo Extra Extra Grande", "A Cotizar"], ["Philadelphia", "Motos", 325], ["Philadelphia", "Carga", 200], ["Philadelphia", "Uso licencia dealer", 150]], "gruas": [["California", "Arizona", "Phoenix (Copart/IAAI)", 150], ["California", "Arizona", "Phoenix North (Copart)", 300], ["California", "Arizona", "Tucson (Copart/IAAI)", 300], ["California", "California", "Ace Carson (IAAI)", 175], ["California", "California", "Ace Perris (IAAI)", 350], ["California", "California", "Adelanto (Copart)", 250], ["California", "California", "Anaheim (IAAI)", 200], ["California", "California", "Antelope (Copart)", 415], ["California", "California", "Bakersfield (Copart)", 200], ["California", "California", "Colton (IAAI)", 415], ["California", "California", "East Bay (IAAI)", 300], ["California", "California", "Fontana (IAAI)", 415], ["California", "California", "Fremont (IAAI)", 300], ["California", "California", "Fresno (Copart/IAAI)", 135], ["California", "California", "Hayward (Copart)", 150], ["California", "California", "High Desert (IAAI)", 150], ["California", "California", "Long Beach (Copart)", 385], ["California", "California", "Los Angeles (Copart/IAAI)", 325], ["California", "California", "Los Angeles South (IAAI)", 225], ["California", "California", "Martinez (Copart)", 450], ["California", "California", "Mentone (Copart)", 200], ["California", "California", "N. Hollywood (IAAI)", 550], ["California", "California", "Napa (Copart)", 325], ["California", "California", "R. Cucamonga (Copart)", 500], ["California", "California", "Redding (Copart)", 200], ["California", "California", "Sacramento (Copart/IAAI)", 255], ["California", "California", "Sacramento West (IAAI)", 415], ["California", "California", "San Bernardino (Copart)", 300], ["California", "California", "San Diego (Copart/IAAI)", 300], ["California", "California", "San Jose (Copart)", 415], ["California", "California", "Santa Clarita (IAAI)", 300], ["California", "California", "So Sacramento (Copart)", 325], ["California", "California", "Stockton (IAAI)", 450], ["California", "California", "Sun Valley (Copart)", 200], ["California", "California", "Vallejo (Copart)", 385], ["California", "California", "Van Nuys (Copart)", 175], ["California", "Colorado", "Colorado Springs (Copart)", 695], ["California", "Colorado", "Denver (Copart/IAAI)", 695], ["California", "Colorado", "Denver Central (Copart)", 695], ["California", "Colorado", "Denver East (Copart)", 695], ["California", "Colorado", "Denver South (Copart)", 695], ["California", "Colorado", "Western Colorado (IAAI)", 725], ["California", "Hawaii", "Honolulu (Copart/IAAI)", "Cotizar"], ["California", "Idaho", "Boise (Copart/IAAI)", 775], ["California", "Montana", "Billings (Copart/IAAI)", "Cotizar"], ["California", "Montana", "Helena (Copart)", "Cotizar"], ["California", "Montana", "Missoula (IAAI)", "Cotizar"], ["California", "Nevada", "Las Vegas (Copart/IAAI)", 325], ["California", "Nevada", "Reno (Copart/IAAI)", 525], ["California", "New Mexico", "Albuquerque (Copart/IAAI)", 795], ["California", "Oregon", "Eugene (Copart/IAAI)", 595], ["California", "Oregon", "Portland (IAAI)", 595], ["California", "Oregon", "Portland North (Copart)", 595], ["California", "Oregon", "Portland South (Copart)", 595], ["California", "Oregon", "Portland West (IAAI)", 595], ["California", "Utah", "Ogden (Copart)", 450], ["California", "Utah", "Provo (IAAI)", 525], ["California", "Utah", "Salt Lake City (Copart/IAAI)", 450], ["California", "Washington", "Graham (Copart)", 695], ["California", "Washington", "North Seattle (Copart)", 750], ["California", "Washington", "Pasco (Copart)", 895], ["California", "Washington", "Puyallup (IAAI)", 695], ["California", "Washington", "Seattle (IAAI)", 695], ["California", "Washington", "Spokane (Copart/IAAI)", 900], ["California", "Arizona", "P", 300], ["California", "Arizona", "P", 325], ["California", "Arizona", "T", 425], ["California", "California", "Brashers/Rio Linda (MANHEIM)", 350], ["California", "California", "Golden Gate/Tracy (MANHEIM)", 400], ["California", "California", "Los Angeles/Mira Loma (MANHEIM)", 200], ["California", "California", "Sacramento (MANHEIM)", 400], ["California", "California", "San Diego (MANHEIM)", 275], ["California", "California", "California (ADESA)", 225], ["California", "California", "Central CA/Fresno (ADESA)", 350], ["California", "California", "Riverside (ADESA)", 225], ["California", "California", "San Diego/Oceanside (ADESA)", 275], ["California", "California", "San Francisco/Hayward (ADESA)", 400], ["California", "California", "Southern CA/Fontana (ADESA)", 250], ["California", "Colorado", "Denver (ADESA)", 775], ["California", "Colorado", "Denver (MANHEIM)", 650], ["California", "Hawaii", "Honolulu (ADESA/MANHEIM)", "Cotizar"], ["California", "Nevada", "Nevada/North Las Vegas (ADESA)", 400], ["California", "Oregon", "Portland (ADESA)", 600], ["California", "Oregon", "Eugene (ADESA)", 600], ["California", "Utah", "Salt Lake (ADESA)", 475], ["California", "Washington", "Seattle (ADESA)", 750], ["California", "Oregon", "Portland (MANHEIM)", 675], ["California", "Utah", "Utah (MANHEIM)", 600], ["California", "Washington", "Seattle (MANHEIM)", 900], ["California", "Idaho", "Boise (MANHEIM)", 325], ["California", "Nevada", "Las Vegas (MANHEIM)", 325], ["California", "Nevada", "Reno (MANHEIM)", 525], ["California", "ADESA", "Manheim", 775], ["Florida", "Alabama", "Birmingham (Copart/IAAI)", 485], ["Florida", "Alabama", "Dothan (Copart/IAAI)", 485], ["Florida", "Alabama", "Huntsville (IAAI)", 485], ["Florida", "Alabama", "Mobile (Copart)", 475], ["Florida", "Alabama", "Mobile South (Copart)", 495], ["Florida", "Alabama", "Montgomery (Copart)", 475], ["Florida", "Alabama", "Tanner (Copart)", 495], ["Florida", "Illinois", "Chicago North (Copart/IAAI)", 725], ["Florida", "Illinois", "Chicago South (Copart/IAAI)", 750], ["Florida", "Illinois", "Chicago West (IAAI)", 725], ["Florida", "Illinois", "Lincoln (IAAI)", 825], ["Florida", "Illinois", "Peoria (Copart)", 825], ["Florida", "Illinois", "Southern Illinois (Copart)", 675], ["Florida", "Illinois", "St. Louis (IAAI)", 675], ["Florida", "Illinois", "Wheeling (Copart)", 675], ["Florida", "Oklahoma", "Oklahoma City (Copart/IAAI)", 750], ["Florida", "Oklahoma", "Tulsa (Copart/IAAI)", 750], ["Florida", "South Carolina", "Charleston (IAAI)", 350], ["Florida", "South Carolina", "Columbia (Copart/IAAI)", 335], ["Florida", "South Carolina", "Greenville (IAAI)", 365], ["Florida", "South Carolina", "Lexington (IAAI)", 335], ["Florida", "South Carolina", "North Charleston (Copart)", 335], ["Florida", "South Carolina", "Spartanburg (Copart)", 375], ["Florida", "Tennessee", "Chattanooga (IAAI)", 550], ["Florida", "Tennessee", "Knoxville (Copart/IAAI)", 480], ["Florida", "Tennessee", "Memphis (Copart/IAAI)", 480], ["Florida", "Tennessee", "Nashville (Copart/IAAI)", 480], ["Florida", "Texas", "Austin (Copart/IAAI)", 500], ["Florida", "Texas", "Austin North (IAAI)", 550], ["Florida", "Texas", "Dallas (IAAI)", 500], ["Florida", "Texas", "Dallas/Ft Worth (IAAI)", 500], ["Florida", "Texas", "Dallas South (Copart)", 500], ["Florida", "Texas", "Fort Worth North (IAAI)", 600], ["Florida", "Texas", "Ft Worth (Copart)", 600], ["Florida", "Texas", "Houston (Copart/IAAI)", 565], ["Florida", "Texas", "Houston East (Copart)", 565], ["Florida", "Texas", "Houston North (IAAI)", 565], ["Florida", "Texas", "Houston South (IAAI)", 565], ["Florida", "Texas", "San Antonio (Copart/IAAI)", 500], ["Florida", "Texas", "San Antonio South (IAAI)", 500], ["Florida", "Minnesota", "Minneapolis (Copart)", 795], ["Florida", "Minnesota", "Minneapolis North (Copart)", 795], ["Florida", "Minnesota", "Minneapolis/St. Paul (IAAI)", 795], ["Florida", "Minnesota", "St. Cloud (Copart)", 850], ["Florida", "Mississippi", "Grenada (IAAI)", 475], ["Florida", "Mississippi", "Gulf Coast (IAAI)", 495], ["Florida", "Mississippi", "Jackson (Copart/IAAI)", 475], ["Florida", "Missouri", "Columbia (Copart)", 750], ["Florida", "Missouri", "Kansas City East (IAAI)", 695], ["Florida", "Missouri", "Sikeston (Copart)", "Cotizar"], ["Florida", "Missouri", "Springfield (Copart/IAAI)", 725], ["Florida", "Missouri", "St. Louis (Copart)", 675], ["Florida", "North Carolina", "Asheville (IAAI)", 515], ["Florida", "North Carolina", "Charlotte (IAAI)", 415], ["Florida", "North Carolina", "China Grove (Copart)", 415], ["Florida", "North Carolina", "Concord (Copart/IAAI)", 415], ["Florida", "North Carolina", "Gastonia (Copart)", 440], ["Florida", "North Carolina", "Greensboro (IAAI)", 415], ["Florida", "North Carolina", "High Point", 465], ["Florida", "North Carolina", "Lumberton (Copart)", 400], ["Florida", "North Carolina", "Mebane (Copart)", 415], ["Florida", "North Carolina", "Mocksville (Copart)", 445], ["Florida", "North Carolina", "Raleigh (Copart/IAAI)", 395], ["Florida", "North Carolina", "Raleigh North (Copart)", 395], ["Florida", "North Carolina", "Wilmington (IAAI)", 515], ["Florida", "Indiana", "Cicero (Copart)", 700], ["Florida", "Indiana", "Dyer (Copart)", 700], ["Florida", "Indiana", "Fort Wayne (Copart)", 900], ["Florida", "Indiana", "Hammond (Copart)", "Cotizar"], ["Florida", "Indiana", "Indianapolis (Copart/IAAI)", 670], ["Florida", "Indiana", "Indianapolis South (IAAI)", 670], ["Florida", "Indiana", "South Bend (IAAI)", 875], ["Florida", "Iowa", "Davenport (Copart/IAAI)", 950], ["Florida", "Iowa", "Des Moines (Copart/IAAI)", 950], ["Florida", "Kansas", "Kansas City (Copart/IAAI)", 675], ["Florida", "Kansas", "Wichita (Copart/IAAI)", 800], ["Florida", "Kentucky", "Ashland (IAAI)", "Cotizar"], ["Florida", "Kentucky", "Bowling Green (IAAI)", 750], ["Florida", "Kentucky", "Earlington (Copart)", 800], ["Florida", "Kentucky", "Lexington East/West (Copart)", 675], ["Florida", "Kentucky", "Louisville (Copart/IAAI)", 675], ["Florida", "Kentucky", "Louisville North (IAAI)", 675], ["Florida", "Kentucky", "Paducah (IAAI)", 975], ["Florida", "Kentucky", "Walton (Copart)", 625], ["Florida", "Louisiana", "Baton Rouge (Copart/IAAI)", 495], ["Florida", "Louisiana", "Lafayette (IAAI)", 525], ["Florida", "Louisiana", "New Orleans (Copart/IAAI)", 495], ["Florida", "Louisiana", "New Orleans East (IAAI)", 495], ["Florida", "Louisiana", "Shreveport (Copart/IAAI)", 675], ["Florida", "Arkansas", "Fayetteville (Copart/IAAI)", 725], ["Florida", "Arkansas", "Little Rock (Copart/IAAI)", 750], ["Florida", "Florida", "Clearwater (IAAI)", 225], ["Florida", "Florida", "Fort Myers (IAAI)", 220], ["Florida", "Florida", "Fort Pierce (Copart/IAAI)", 150], ["Florida", "Florida", "Jacksonville (IAAI)", 250], ["Florida", "Florida", "Jacksonville North (Copart)", 250], ["Florida", "Florida", "Miami Central (Copart)", 100], ["Florida", "Florida", "Miami North (Copart/IAAI)", 100], ["Florida", "Florida", "Miami South (Copart)", 100], ["Florida", "Florida", "Ocala (Copart)", 250], ["Florida", "Florida", "Orlando (IAAI)", 185], ["Florida", "Florida", "Orlando North (Copart/IAAI)", 185], ["Florida", "Florida", "Orlando South (Copart)", 185], ["Florida", "Florida", "Pensacola (IAAI)", 350], ["Florida", "Florida", "Punta Gorda (Copart)", 220], ["Florida", "Florida", "Punta Gorda South (Copart)", 225], ["Florida", "Florida", "Tallahassee (Copart)", 320], ["Florida", "Florida", "Tampa (IAAI)", 225], ["Florida", "Florida", "Tampa North (IAAI)", 225], ["Florida", "Florida", "Tampa South (Copart)", 205], ["Florida", "Florida", "West Palm Beach (Copart)", 120], ["Florida", "Florida", "West Palm Beach (IAAI)", 145], ["Florida", "Georgia", "Atlanta (IAAI)", 345], ["Florida", "Georgia", "Atlanta Crashedtoys", 345], ["Florida", "Georgia", "Atlanta East/North/South", 345], ["Florida", "Georgia", "Atlanta West (Copart)", 345], ["Florida", "Georgia", "Augusta (Copart)", 395], ["Florida", "Georgia", "Cartersville (Copart)", 345], ["Florida", "Georgia", "Fairburn (Copart)", 345], ["Florida", "Georgia", "Macon (Copart/IAAI)", 345], ["Florida", "Georgia", "Savannah (Copart/IAAI)", 345], ["Florida", "Georgia", "Tifton (Copart/IAAI)", 345], ["Philadelphia", "Connecticut", "Hartford (Copart)", 335], ["Philadelphia", "Connecticut", "Hartford (IAAI)", 335], ["Philadelphia", "Connecticut", "Hartford Springfield (Copart)", 350], ["Philadelphia", "Delaware", "New Castle (IAAI)", 100], ["Philadelphia", "Delaware", "Seaford (Copart)", 200], ["Philadelphia", "Maine", "Lyman (Copart)", 575], ["Philadelphia", "Maine", "Portland Gorham (IAAI)", 575], ["Philadelphia", "Maine", "Windham (Copart)", 625], ["Philadelphia", "Maryland", "Baltimore (Copart/IAAI)", 185], ["Philadelphia", "Maryland", "Baltimore East (Copart)", 240], ["Philadelphia", "Maryland", "Dundalk (IAAI)", 195], ["Philadelphia", "Maryland", "Metro DC (IAAI)", 195], ["Philadelphia", "Maryland", "Washington DC (Copart)", 200], ["Philadelphia", "Maryland", "Elkton (IAAI)", 175], ["Philadelphia", "Massachusetts", "Boston North (Copart)", 495], ["Philadelphia", "Massachusetts", "Boston-Shirley (IAAI)", 495], ["Philadelphia", "Massachusetts", "Boston South (Copart)", 480], ["Philadelphia", "Massachusetts", "Freetown (Copart)", 425], ["Philadelphia", "Massachusetts", "Taunton (IAAI)", 425], ["Philadelphia", "Massachusetts", "Templeton (IAAI)", 525], ["Philadelphia", "Massachusetts", "West Warren (Copart)", 495], ["Philadelphia", "Michigan", "Detroit (Copart/IAAI)", 775], ["Philadelphia", "Michigan", "Flint (Copart/IAAI)", 775], ["Philadelphia", "Michigan", "Grand Rapids (IAAI)", 800], ["Philadelphia", "Michigan", "Ionia (Copart)", "Cotizar"], ["Philadelphia", "Michigan", "Kincheloe (Copart)", "Cotizar"], ["Philadelphia", "Michigan", "Lansing (Copart)", 775], ["Philadelphia", "Michigan", "Wayland (Copart)", 775], ["Philadelphia", "New Hampshire", "Candia (Copart)", 500], ["Philadelphia", "New Hampshire", "Manchester (IAAI)", 475], ["Philadelphia", "New Jersey", "Avenel (IAAI)", 170], ["Philadelphia", "New Jersey", "Central New Jersey (IAAI)", 170], ["Philadelphia", "New Jersey", "Englishtown (IAAI)", 180], ["Philadelphia", "New Jersey", "Glassboro East/West (Copart)", 145], ["Philadelphia", "New Jersey", "Port Murray (IAAI)", 275], ["Philadelphia", "New Jersey", "Sayreville (IAAI)", 235], ["Philadelphia", "New Jersey", "Somerville (Copart)", 175], ["Philadelphia", "New Jersey", "Southern New Jersey (IAAI)", 160], ["Philadelphia", "New Jersey", "Trenton (Copart)", 170], ["Philadelphia", "New York", "Albany (Copart/IAAI)", 300], ["Philadelphia", "New York", "Buffalo (Copart)", 575], ["Philadelphia", "New York", "Buffalo (IAAI)", 550], ["Philadelphia", "New York", "Long Island (Copart/IAAI)", 280], ["Philadelphia", "New York", "Newburgh (Copart/IAAI)", 260], ["Philadelphia", "New York", "Rochester (Copart/IAAI)", 415], ["Philadelphia", "New York", "Syracuse (IAAI/Copart)", 370], ["Philadelphia", "Ohio", "Akron-Canton (IAAI)", 575], ["Philadelphia", "Ohio", "Cincinnati (IAAI)", 575], ["Philadelphia", "Ohio", "Cincinnati South (IAAI)", 575], ["Philadelphia", "Ohio", "Cleveland (IAAI)", 575], ["Philadelphia", "Ohio", "Cleveland East/West (Copart)", 575], ["Philadelphia", "Ohio", "Columbus (Copart/IAAI)", 575], ["Philadelphia", "Ohio", "Dayton (Copart/IAAI)", 575], ["Philadelphia", "Pennsylvania", "Altoona (IAAI/Copart)", 330], ["Philadelphia", "Pennsylvania", "Bridgeport (IAAI)", 120], ["Philadelphia", "Pennsylvania", "Chambersburg (Copart)", 220], ["Philadelphia", "Pennsylvania", "Erie (IAAI)", 540], ["Philadelphia", "Pennsylvania", "Harrisburg (Copart)", 170], ["Philadelphia", "Pennsylvania", "Philadelphia (Copart)", 145], ["Philadelphia", "Pennsylvania", "Philadelphia (IAAI)", 120], ["Philadelphia", "Pennsylvania", "Philadelphia East (Copart)", 145], ["Philadelphia", "Pennsylvania", "Pittsburgh (IAAI)", 375], ["Philadelphia", "Pennsylvania", "Pittsburgh East/South/West (Copart)", 375], ["Philadelphia", "Pennsylvania", "Pittsburgh-North (IAAI/Copart)", 375], ["Philadelphia", "Pennsylvania", "Scranton (IAAI/Copart)", 190], ["Philadelphia", "Pennsylvania", "York Haven (Copart)", 175], ["Philadelphia", "Pennsylvania", "York Springs (IAAI)", 190], ["Philadelphia", "Rhode Island", "Exeter (Copart)", 425], ["Philadelphia", "Rhode Island", "Providence (IAAI)", 400], ["Philadelphia", "Vermont", "Burlington (IAAI)", 725], ["Philadelphia", "Vermont", "Rutland (Copart)", 725], ["Philadelphia", "Virginia", "Culpeper (IAAI)", 300], ["Philadelphia", "Virginia", "Danville (Copart)", 495], ["Philadelphia", "Virginia", "Fredericksburg (Copart)", 325], ["Philadelphia", "Virginia", "Hampton (Copart)", 395], ["Philadelphia", "Virginia", "Northern Virginia (IAAI)", 295], ["Philadelphia", "Virginia", "Pulaski (IAAI)", 525], ["Philadelphia", "Virginia", "Richmond (Copart/IAAI)", 320], ["Philadelphia", "Virginia", "Richmond East (Copart)", 375], ["Philadelphia", "Virginia", "Roanoke (IAAI)", 525], ["Philadelphia", "Virginia", "Suffolk (IAAI)", 450], ["Philadelphia", "Virginia", "Tidewater (IAAI)", 395], ["Philadelphia", "Wisconsin", "Appleton (IAAI)", 825], ["Philadelphia", "Wisconsin", "Madison South (Copart)", 825], ["Philadelphia", "Wisconsin", "Milwaukee (IAAI)", 825], ["Philadelphia", "Wisconsin", "Milwaukee South (Copart)", 800], ["Philadelphia", "Wisconsin", "Portage (IAAI)", 825], ["Philadelphia", "West Virginia", "Buckhannon (IAAI)", 550], ["Philadelphia", "West Virginia", "Charleston (Copart)", 550], ["Philadelphia", "West Virginia", "Shady Spring (IAAI)", 550]], "bases": ["California", "Florida", "Philadelphia"], "types": ["Vehículo Pequeño", "Especial", "Vehículo Mediano", "Vehículo Grande", "Vehículo Extra Grande", "Vehículo Extra Extra Grande", "Motos", "Carga", "Uso licencia dealer"], "locations": {"California": ["Phoenix (Copart/IAAI)", "Phoenix North (Copart)", "Tucson (Copart/IAAI)", "Ace Carson (IAAI)", "Ace Perris (IAAI)", "Adelanto (Copart)", "Anaheim (IAAI)", "Antelope (Copart)", "Bakersfield (Copart)", "Colton (IAAI)", "East Bay (IAAI)", "Fontana (IAAI)", "Fremont (IAAI)", "Fresno (Copart/IAAI)", "Hayward (Copart)", "High Desert (IAAI)", "Long Beach (Copart)", "Los Angeles (Copart/IAAI)", "Los Angeles South (IAAI)", "Martinez (Copart)", "Mentone (Copart)", "N. Hollywood (IAAI)", "Napa (Copart)", "R. Cucamonga (Copart)", "Redding (Copart)", "Sacramento (Copart/IAAI)", "Sacramento West (IAAI)", "San Bernardino (Copart)", "San Diego (Copart/IAAI)", "San Jose (Copart)", "Santa Clarita (IAAI)", "So Sacramento (Copart)", "Stockton (IAAI)", "Sun Valley (Copart)", "Vallejo (Copart)", "Van Nuys (Copart)", "Colorado Springs (Copart)", "Denver (Copart/IAAI)", "Denver Central (Copart)", "Denver East (Copart)", "Denver South (Copart)", "Western Colorado (IAAI)", "Honolulu (Copart/IAAI)", "Boise (Copart/IAAI)", "Billings (Copart/IAAI)", "Helena (Copart)", "Missoula (IAAI)", "Las Vegas (Copart/IAAI)", "Reno (Copart/IAAI)", "Albuquerque (Copart/IAAI)", "Eugene (Copart/IAAI)", "Portland (IAAI)", "Portland North (Copart)", "Portland South (Copart)", "Portland West (IAAI)", "Ogden (Copart)", "Provo (IAAI)", "Salt Lake City (Copart/IAAI)", "Graham (Copart)", "North Seattle (Copart)", "Pasco (Copart)", "Puyallup (IAAI)", "Seattle (IAAI)", "Spokane (Copart/IAAI)", "P", "T", "Brashers/Rio Linda (MANHEIM)", "Golden Gate/Tracy (MANHEIM)", "Los Angeles/Mira Loma (MANHEIM)", "Sacramento (MANHEIM)", "San Diego (MANHEIM)", "California (ADESA)", "Central CA/Fresno (ADESA)", "Riverside (ADESA)", "San Diego/Oceanside (ADESA)", "San Francisco/Hayward (ADESA)", "Southern CA/Fontana (ADESA)", "Denver (ADESA)", "Denver (MANHEIM)", "Honolulu (ADESA/MANHEIM)", "Nevada/North Las Vegas (ADESA)", "Portland (ADESA)", "Eugene (ADESA)", "Salt Lake (ADESA)", "Seattle (ADESA)", "Portland (MANHEIM)", "Utah (MANHEIM)", "Seattle (MANHEIM)", "Boise (MANHEIM)", "Las Vegas (MANHEIM)", "Reno (MANHEIM)", "Manheim"], "Florida": ["Birmingham (Copart/IAAI)", "Dothan (Copart/IAAI)", "Huntsville (IAAI)", "Mobile (Copart)", "Mobile South (Copart)", "Montgomery (Copart)", "Tanner (Copart)", "Chicago North (Copart/IAAI)", "Chicago South (Copart/IAAI)", "Chicago West (IAAI)", "Lincoln (IAAI)", "Peoria (Copart)", "Southern Illinois (Copart)", "St. Louis (IAAI)", "Wheeling (Copart)", "Oklahoma City (Copart/IAAI)", "Tulsa (Copart/IAAI)", "Charleston (IAAI)", "Columbia (Copart/IAAI)", "Greenville (IAAI)", "Lexington (IAAI)", "North Charleston (Copart)", "Spartanburg (Copart)", "Chattanooga (IAAI)", "Knoxville (Copart/IAAI)", "Memphis (Copart/IAAI)", "Nashville (Copart/IAAI)", "Austin (Copart/IAAI)", "Austin North (IAAI)", "Dallas (IAAI)", "Dallas/Ft Worth (IAAI)", "Dallas South (Copart)", "Fort Worth North (IAAI)", "Ft Worth (Copart)", "Houston (Copart/IAAI)", "Houston East (Copart)", "Houston North (IAAI)", "Houston South (IAAI)", "San Antonio (Copart/IAAI)", "San Antonio South (IAAI)", "Minneapolis (Copart)", "Minneapolis North (Copart)", "Minneapolis/St. Paul (IAAI)", "St. Cloud (Copart)", "Grenada (IAAI)", "Gulf Coast (IAAI)", "Jackson (Copart/IAAI)", "Columbia (Copart)", "Kansas City East (IAAI)", "Sikeston (Copart)", "Springfield (Copart/IAAI)", "St. Louis (Copart)", "Asheville (IAAI)", "Charlotte (IAAI)", "China Grove (Copart)", "Concord (Copart/IAAI)", "Gastonia (Copart)", "Greensboro (IAAI)", "High Point", "Lumberton (Copart)", "Mebane (Copart)", "Mocksville (Copart)", "Raleigh (Copart/IAAI)", "Raleigh North (Copart)", "Wilmington (IAAI)", "Cicero (Copart)", "Dyer (Copart)", "Fort Wayne (Copart)", "Hammond (Copart)", "Indianapolis (Copart/IAAI)", "Indianapolis South (IAAI)", "South Bend (IAAI)", "Davenport (Copart/IAAI)", "Des Moines (Copart/IAAI)", "Kansas City (Copart/IAAI)", "Wichita (Copart/IAAI)", "Ashland (IAAI)", "Bowling Green (IAAI)", "Earlington (Copart)", "Lexington East/West (Copart)", "Louisville (Copart/IAAI)", "Louisville North (IAAI)", "Paducah (IAAI)", "Walton (Copart)", "Baton Rouge (Copart/IAAI)", "Lafayette (IAAI)", "New Orleans (Copart/IAAI)", "New Orleans East (IAAI)", "Shreveport (Copart/IAAI)", "Fayetteville (Copart/IAAI)", "Little Rock (Copart/IAAI)", "Clearwater (IAAI)", "Fort Myers (IAAI)", "Fort Pierce (Copart/IAAI)", "Jacksonville (IAAI)", "Jacksonville North (Copart)", "Miami Central (Copart)", "Miami North (Copart/IAAI)", "Miami South (Copart)", "Ocala (Copart)", "Orlando (IAAI)", "Orlando North (Copart/IAAI)", "Orlando South (Copart)", "Pensacola (IAAI)", "Punta Gorda (Copart)", "Punta Gorda South (Copart)", "Tallahassee (Copart)", "Tampa (IAAI)", "Tampa North (IAAI)", "Tampa South (Copart)", "West Palm Beach (Copart)", "West Palm Beach (IAAI)", "Atlanta (IAAI)", "Atlanta Crashedtoys", "Atlanta East/North/South", "Atlanta West (Copart)", "Augusta (Copart)", "Cartersville (Copart)", "Fairburn (Copart)", "Macon (Copart/IAAI)", "Savannah (Copart/IAAI)", "Tifton (Copart/IAAI)"], "Philadelphia": ["Hartford (Copart)", "Hartford (IAAI)", "Hartford Springfield (Copart)", "New Castle (IAAI)", "Seaford (Copart)", "Lyman (Copart)", "Portland Gorham (IAAI)", "Windham (Copart)", "Baltimore (Copart/IAAI)", "Baltimore East (Copart)", "Dundalk (IAAI)", "Metro DC (IAAI)", "Washington DC (Copart)", "Elkton (IAAI)", "Boston North (Copart)", "Boston-Shirley (IAAI)", "Boston South (Copart)", "Freetown (Copart)", "Taunton (IAAI)", "Templeton (IAAI)", "West Warren (Copart)", "Detroit (Copart/IAAI)", "Flint (Copart/IAAI)", "Grand Rapids (IAAI)", "Ionia (Copart)", "Kincheloe (Copart)", "Lansing (Copart)", "Wayland (Copart)", "Candia (Copart)", "Manchester (IAAI)", "Avenel (IAAI)", "Central New Jersey (IAAI)", "Englishtown (IAAI)", "Glassboro East/West (Copart)", "Port Murray (IAAI)", "Sayreville (IAAI)", "Somerville (Copart)", "Southern New Jersey (IAAI)", "Trenton (Copart)", "Albany (Copart/IAAI)", "Buffalo (Copart)", "Buffalo (IAAI)", "Long Island (Copart/IAAI)", "Newburgh (Copart/IAAI)", "Rochester (Copart/IAAI)", "Syracuse (IAAI/Copart)", "Akron-Canton (IAAI)", "Cincinnati (IAAI)", "Cincinnati South (IAAI)", "Cleveland (IAAI)", "Cleveland East/West (Copart)", "Columbus (Copart/IAAI)", "Dayton (Copart/IAAI)", "Altoona (IAAI/Copart)", "Bridgeport (IAAI)", "Chambersburg (Copart)", "Erie (IAAI)", "Harrisburg (Copart)", "Philadelphia (Copart)", "Philadelphia (IAAI)", "Philadelphia East (Copart)", "Pittsburgh (IAAI)", "Pittsburgh East/South/West (Copart)", "Pittsburgh-North (IAAI/Copart)", "Scranton (IAAI/Copart)", "York Haven (Copart)", "York Springs (IAAI)", "Exeter (Copart)", "Providence (IAAI)", "Burlington (IAAI)", "Rutland (Copart)", "Culpeper (IAAI)", "Danville (Copart)", "Fredericksburg (Copart)", "Hampton (Copart)", "Northern Virginia (IAAI)", "Pulaski (IAAI)", "Richmond (Copart/IAAI)", "Richmond East (Copart)", "Roanoke (IAAI)", "Suffolk (IAAI)", "Tidewater (IAAI)", "Appleton (IAAI)", "Madison South (Copart)", "Milwaukee (IAAI)", "Milwaukee South (Copart)", "Portage (IAAI)", "Buckhannon (IAAI)", "Charleston (Copart)", "Shady Spring (IAAI)"]}, "gate": 90, "environmental": 15, "taxRate": 0.5, "defaults": {"base": "Florida", "type": "Vehículo Pequeño", "location": "Punta Gorda (Copart)"}};
+const $ = id => document.getElementById(id);
+const money = n => isFinite(n) ? n.toLocaleString('en-US',{style:'currency',currency:'USD'}) : 'REVISAR';
+
+function fillSelect(sel, items, selected) {
+  sel.innerHTML='';
+  items.forEach(x=>{let o=document.createElement('option');o.value=x;o.textContent=x;sel.appendChild(o)});
+  if(selected && items.includes(selected)) sel.value=selected;
+}
+
+function buyerLive(price) {
+  if(price >= 15000) return {buyer:price*0.075, live:149};
+  let row=null;
+  for(const r of D.buyer) if(price>=Number(r[0])) row=r;
+  if(!row) return {buyer:0,live:0};
+  return {buyer:Number(row[1]),live:Number(row[2])};
+}
+
+function updateLocations() {
+  const base=$('base').value;
+  const locs=(D.locations[base] || []).slice().sort((a,b)=>String(a).localeCompare(String(b),'es',{sensitivity:'base'}));
+  const current=$('location').value;
+  fillSelect($('location'),locs,current);
+}
+
+
+
+
+function findFreight() {
+  const r=D.freight.find(x=>x[0]===$('base').value && x[1]===$('type').value);
+  return r ? (typeof r[2]==='number' ? r[2] : null) : null;
+}
+
+function findGrua() {
+  const r=D.gruas.find(x=>x[0]===$('base').value && x[2]===$('location').value);
+  return r ? (typeof r[3]==='number' ? r[3] : null) : null;
+}
+
+function calc() {
+  const p=Number($('price').value)||0;
+  const f=buyerLive(p);
+  const gate=Number(D.gate)||90, env=Number(D.environmental)||15, titleFee=40;
+  const copart=p+f.buyer+f.live+gate+env+titleFee;
+  const freight=findFreight();
+  const grua=findGrua();
+  const bl=Number($('bl').value)||0, admin=Number($('admin').value)||0;
+  const aduana=Number($('aduana').value)||0, transfer=Number($('transfer').value)||0, storage=Number($('storage').value)||0, roda=Number($('roda').value)||0, other=Number($('other').value)||0;
+  const ownCosts=aduana+transfer+storage+roda+other;
+  const taxBase=freight===null||grua===null ? NaN : copart+freight+grua+bl;
+  const taxRate=Number($('taxRate').value)/100;
+  const tax=isFinite(taxBase) ? taxBase*taxRate : NaN;
+  const beforeTax=freight===null||grua===null ? NaN : copart+freight+grua+bl+admin;
+  const total=isFinite(beforeTax)&&isFinite(tax) ? beforeTax+tax+ownCosts : NaN;
+  const sale=Number($('sale').value)||0;
+  const profit=isFinite(total) ? sale-total : NaN;
+  const margin=sale>0&&isFinite(profit) ? profit/sale : 0;
+  $('buyer').textContent=money(f.buyer); $('live').textContent=money(f.live);
+  $('gate').textContent=money(gate); $('env').textContent=money(env); $('titleFee').textContent=money(titleFee); $('copart').textContent=money(copart);
+  $('freight').textContent=freight===null?'A COTIZAR / REVISAR':money(freight);
+  $('grua').textContent=grua===null?'A COTIZAR / REVISAR':money(grua);
+  $('taxBase').textContent=money(taxBase); $('tax').textContent=money(tax);
+  $('beforeTax').textContent=money(beforeTax); $('ownCosts').textContent=money(ownCosts); $('total').textContent=money(total);
+  $('profit').textContent=money(profit); $('margin').textContent='Margen: '+(margin*100).toFixed(2)+'%';
+}
+
+function resetApp() {
+  $('price').value=4980; $('taxRate').value=50; $('bl').value=20; $('admin').value=0; $('aduana').value=113; $('transfer').value=40; $('storage').value=30; $('roda').value=0; $('other').value=0; $('sale').value=0;
+  $('base').value=D.defaults.base; $('type').value=D.defaults.type; updateLocations(); $('location').value=D.defaults.location; calc();
+}
+
+fillSelect($('base'),D.bases,D.defaults.base);
+fillSelect($('type'),D.types,D.defaults.type);
+updateLocations();
+$('location').value=D.defaults.location;
+['price','base','type','location','bl','admin','aduana','transfer','storage','roda','other','sale','taxRate'].forEach(id=>$(id).addEventListener('input',()=>{if(id==='base') updateLocations();calc()}));
+['base','type','location'].forEach(id=>$(id).addEventListener('change',()=>{if(id==='base') updateLocations();calc()}));
+calc();
+</script>
+</body>
+</html>
